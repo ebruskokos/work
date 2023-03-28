@@ -1,0 +1,39 @@
+---
+- hosts: webservers
+  become: true
+  vars_files:
+    - variables/variables.yml
+  tasks:
+    - name: Install latest version of Apache
+      apt: name=apache2 update_cache=yes state=latest
+
+    - name: Create apache group
+      group:
+        name: "{{ admin_group }}"
+        state: present
+    
+    - name: create apache user
+      user:
+       name: "{{ app_user }}"
+       shell: /bin/bash
+       groups: "{{ admin_group }}"
+       append: yes
+
+    - name: change ownership to user
+      file:
+        path: "/var/www/html/"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ admin_group }}"
+        mode: '0755'
+
+    - name: Copy your index page
+      template:
+        src: "files/{{ app_file }}"
+        dest: "/var/www/html/{{ app_file }}"
+
+  handlers:
+    - name: restart-apache
+      service:
+        name: apache2
+        state: restarted

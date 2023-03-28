@@ -1,0 +1,33 @@
+- name: Update the apt package index
+  apt: 
+    update_cache: yes
+    state: latest
+
+- name:  install packages to allow apt to use a repository over HTTPS
+  apt: name={{ item }} state=latest
+  loop:
+    - ca-certificates
+    - curl
+    - gnupg 
+    - lsb-release
+
+- name: make directory for docker key
+  shell: 'sudo mkdir -m 0755 -p /etc/apt/keyrings'
+
+- name: Add Docker’s official GPG key
+  apt_key:
+    url:  "{{ docker_gpg_key }}"
+    state: present
+
+- name: set up the repository
+  apt_repository:
+    repo: "{{ repository }}"
+
+- name:  Update Package & install the latest version of docker
+  apt: name={{ item }} update_cache=yes state=latest
+  loop: 
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io 
+    - docker-buildx-plugin
+    - docker-compose-plugin

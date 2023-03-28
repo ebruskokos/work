@@ -1,0 +1,21 @@
+    - name: update package
+      apt:
+        update_cache: yes
+        state: latest
+        
+    - name: install nginx
+      apt:
+        name: nginx
+        state: latest
+    # - name: Uninstall Nginx
+    #   apt:
+    #     name: nginx
+    #     state: absent
+    # - name: Stop Nginx Services
+    #   service:
+    #     name: nginx
+    #     state: stopped
+    # - name: Remove Nginx configuration files
+    #   file:
+    #     path: /etc/nginx/
+    #     state: absent
